@@ -2,6 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 import time
 from flask import Flask, jsonify, request
 import threading
@@ -9,12 +10,13 @@ from collections import defaultdict
 from decimal import Decimal, InvalidOperation
 import os
 
-# Caminho para o geckodriver.exe
-driver_path = r'C:\Users\Usuario\Desktop\mr_robot\geckodriver.exe'  
-# Lista de meses para repetir o processo
-meses = ['2025-07', '2025-06', '2025-05'] 
+# O caminho para o geckodriver não é mais necessário, pois será instalado pelo build.sh.
+# driver_path = r'C:\Users\Usuario\Desktop\mr_robot\geckodriver.exe'  
 
-service = Service(driver_path)
+# A variável 'meses' não estava sendo utilizada.
+# meses = ['2025-07', '2025-06', '2025-05'] 
+
+# O Service não precisa mais ser definido globalmente.
 
 email = os.environ.get("ROBO_EMAIL", "")
 senha = os.environ.get("ROBO_SENHA", "")
@@ -49,8 +51,17 @@ def monitorar_total():
     while True:
         driver = None
         try:
-            print("Iniciando navegador...")
-            driver = webdriver.Firefox(service=service)
+            print("Configurando opções do Firefox para modo headless...")
+            options = FirefoxOptions()
+            options.add_argument("--headless")
+            options.add_argument("--disable-gpu")
+            options.add_argument("--no-sandbox") # Essencial para rodar como root em containers
+            options.add_argument("--window-size=1920,1080")
+            
+            print("Iniciando navegador Firefox em modo headless...")
+            # O Selenium vai procurar o geckodriver no PATH do sistema.
+            driver = webdriver.Firefox(options=options)
+            
             fazer_login(driver)
             print("Acessando extrato...")
             driver.get(url_extrato)

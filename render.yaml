@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: mr-robot
+    env: python
+    plan: free # ou o plano que você preferir
+    branch: main
+    build_command: "bash build.sh"
+    start_command: "python limi.py"
+    env_vars:
+      - key: PYTHON_VERSION
+        value: 3.10.13 # Versão do Python estável e compatível
+      - key: ROBO_EMAIL
+        sync: false # Coloque o e-mail diretamente no painel do Render
+      - key: ROBO_SENHA
+        sync: false # Coloque a senha diretamente no painel do Render 
